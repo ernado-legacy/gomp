@@ -16,19 +16,19 @@ type Client interface {
 }
 
 type Sender struct {
-	apple  *Client
-	google *Client
+	apple  *APNS
+	google *GCM
 }
 
 func (s *Sender) Handle(r *http.Request) error {
 	var err, handleErr error
 	q := r.URL.Query()
-	message := q.Get("message")
+	message := Message(q.Get("message"))
 	var googleDestinations, appleDestinations []string
 	googleDestinations, googlePresent := q[GCMKEY]
 	appleDestinations, applePresent := q[APNSKey]
 	if googlePresent {
-		err = errs.google.Send(message, googleDestinations)
+		err = s.google.Send(message, googleDestinations)
 		if err != nil {
 			log.Println(err)
 			handleErr = err

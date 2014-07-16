@@ -30,6 +30,6 @@ func (client *GCM) Send(message Message, destinations []string) error {
 
 func newGCM(cfg GCMConfig) *GCM {
 	client := &GCM{}
-	client.sender = &gcm.Sender{ApiKey: GCMConfig.ApiKey}
+	client.sender = &gcm.Sender{ApiKey: cfg.ApiKey}
 	return client
 }
