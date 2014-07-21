@@ -4,4 +4,4 @@ EXPOSE 80
 VOLUME /data
 WORKDIR /data
 ENTRYPOINT ["gompd"]
-CMD["-port", "80",]
+CMD ["-port", "80"]
