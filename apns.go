@@ -16,21 +16,25 @@ type APNS struct {
 type APNSConfig struct {
 	Gateway     string
 	Certificate string
+	Key         string
 }
 
 func (client *APNS) Send(message Message, destinations []string) error {
-	pn := apns.NewPushNotification()
 	payload := apns.NewPayload()
 	payload.Alert = message
-	pn.AddPayload(payload)
-	var err error
+	payload.Badge = 42
+	payload.Sound = "bingbong.aiff"
 
+	var err error
 	for _, destination := range destinations {
-		client.client.KeyBase64 = destination
+		pn := apns.NewPushNotification()
+		pn.DeviceToken = destination
+		pn.AddPayload(payload)
 		resp := client.client.Send(pn)
 		if resp.Error != nil {
-			log.Println("error", resp.Error)
-			err = ErrorSend
+			alert, _ := pn.PayloadString()
+			log.Println("[apns]", resp.Error, alert)
+			err = resp.Error
 		}
 	}
 	return err
@@ -39,7 +43,9 @@ func (client *APNS) Send(message Message, destinations []string) error {
 func newAPNS(cfg APNSConfig) *APNS {
 	a := &APNS{}
 	c := &apns.Client{}
-	c.CertificateBase64 = cfg.Certificate
+	c.CertificateFile = cfg.Certificate
+	c.KeyFile = cfg.Key
+	c.Gateway = cfg.Gateway
 	a.client = c
 	return a
 }

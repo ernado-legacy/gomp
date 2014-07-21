@@ -1,0 +1,10 @@
+{
+	"google":  {
+		"token": "token"
+	},
+	"apple": {
+		"key": "keys/pkey.pem",
+		"gateway": "gateway.sandbox.push.apple.com:2195",
+		"cert": "keys/certificate.pem"
+	}
+}

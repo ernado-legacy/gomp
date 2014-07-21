@@ -1,6 +1,7 @@
 package gomp
 
 import (
+	"errors"
 	"log"
 	"net/http"
 )
@@ -9,6 +10,11 @@ type Message string
 
 const (
 	MessageKey = "message"
+)
+
+var (
+	ErrorBlankMessage = errors.New("Blank message")
+	ErrorNoTargets    = errors.New("No targets specified")
 )
 
 type Client interface {
@@ -23,10 +29,21 @@ type Sender struct {
 func (s *Sender) Handle(r *http.Request) error {
 	var err, handleErr error
 	q := r.URL.Query()
-	message := Message(q.Get("message"))
+	m := q.Get("message")
+
+	if m == "" {
+		return ErrorBlankMessage
+	}
+
+	message := Message(m)
 	var googleDestinations, appleDestinations []string
 	googleDestinations, googlePresent := q[GCMKEY]
 	appleDestinations, applePresent := q[APNSKey]
+
+	if !applePresent && !googlePresent {
+		return ErrorNoTargets
+	}
+
 	if googlePresent {
 		err = s.google.Send(message, googleDestinations)
 		if err != nil {
@@ -35,7 +52,7 @@ func (s *Sender) Handle(r *http.Request) error {
 		}
 	}
 	if applePresent {
-		s.apple.Send(message, appleDestinations)
+		err = s.apple.Send(message, appleDestinations)
 		if err != nil {
 			log.Println(err)
 			handleErr = err
