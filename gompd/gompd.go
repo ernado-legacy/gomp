@@ -57,7 +57,9 @@ func main() {
 	client = gomp.New(appleConfig, googleConfig)
 
 	router := httprouter.New()
+
 	router.GET(*prefix, Index)
+	router.POST(*prefix, Index)
 
 	addr := fmt.Sprintf("%s:%d", *host, *port)
 	log.Println("listening on", addr)
