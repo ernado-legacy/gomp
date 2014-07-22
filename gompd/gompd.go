@@ -26,7 +26,7 @@ var (
 	configPath = flag.String("cfg", "conf.json", "configuration file path")
 	port       = flag.Int("port", 3100, "port")
 	host       = flag.String("host", "", "host")
-	prefix     = flag.String("prefix", "/push", "uri prefix")
+	prefix     = flag.String("prefix", "/:project/push", "uri prefix")
 	client     *gomp.Sender
 )
 
