@@ -30,6 +30,7 @@ func (s *Sender) Handle(r *http.Request) error {
 	var err, handleErr error
 	q := r.URL.Query()
 	m := q.Get("message")
+	sync := q.Get("sync") != ""
 
 	if m == "" {
 		return ErrorBlankMessage
@@ -45,17 +46,32 @@ func (s *Sender) Handle(r *http.Request) error {
 	}
 
 	if googlePresent {
-		err = s.google.Send(message, googleDestinations)
-		if err != nil {
-			log.Println(err)
-			handleErr = err
+		send := func() {
+			err = s.google.Send(message, googleDestinations)
+			if err != nil {
+				log.Println(err)
+				handleErr = err
+			}
+		}
+		if sync {
+			send()
+		} else {
+			go send()
 		}
 	}
+
 	if applePresent {
-		err = s.apple.Send(message, appleDestinations)
-		if err != nil {
-			log.Println(err)
-			handleErr = err
+		send := func() {
+			err = s.apple.Send(message, appleDestinations)
+			if err != nil {
+				log.Println(err)
+				handleErr = err
+			}
+		}
+		if sync {
+			send()
+		} else {
+			go send()
 		}
 	}
 	return handleErr
