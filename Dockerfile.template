@@ -1,5 +1,6 @@
 FROM cydev/go
 RUN go get "github.com/ernado/gomp/gompd"
+RUN v=VERSION go get -u "github.com/ernado/gomp/gompd"
 EXPOSE 80
 VOLUME /data
 WORKDIR /data
