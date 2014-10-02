@@ -22,7 +22,7 @@ type APNSConfig struct {
 func (client *APNS) Send(message Message, destinations []string) error {
 	payload := apns.NewPayload()
 	payload.Alert = message
-	payload.Badge = 42
+	payload.Badge = 0
 	payload.Sound = "bingbong.aiff"
 
 	var err error
